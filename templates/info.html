@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户可视化分析一览</title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="../static/css/bootstrap.css" crossorigin="anonymous">
+
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="../static/css/bootstrap-theme.css" crossorigin="anonymous">
+    <script src="../static/js/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/4.0.4/echarts-en.common.js"></script>
+     <script src="../static/js/echarts-wordcloud.min.js"></script>
+    <style>
+        .infostyle{
+            width:220px;
+            height:50px;
+            background: #2aabd2;
+            margin-right:40px;
+            margin-bottom: 20px;
+        }
+        .default{
+            background:#ded;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>对爬取的{{ count }}名用户的分析如下：</h2>
+        <h3 style="text-align:center;">知乎用户信息分析</h3>
+        <!-- 为ECharts 准备一个具备大小（宽高）的dom -->
+
+    <div class="user userSex">
+         <div id="main" style="width: 800px;height:400px;"></div>
+        <script type="text/javascript">
+        // 基于准备好的dom,初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        // 知乎用户性别分析,指定图表的配置项和数据
+        // 计算男性，女性，未知的数量
+        var man = 0;
+        var women =0;
+        var unknowsex = 0;
+        {%  for todo in todos %}
+         {% if  todo['gender']==1 %}
+            man += 1;
+        {%elif todo['gender']==0 %}
+            women += 1;
+        {% else %}
+            unknowsex += 1;
+        {% endif %}
+        {% endfor %}
+        var option = {
+            title : {
+                text : '知乎用户性别分析'
+            },
+            tooltip : {},
+            legend : {
+                data : ['性别']
+            },
+            xAxis : {
+                data : ["男", "女", "未知"]
+            },
+            yAxis : {},
+            series: [{
+                name : '性别',
+                type : 'bar',
+                data : [man, women, unknowsex]
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表
+        myChart.setOption(option);
+        </script>
+    </div>
+
+    <div class="user userFans" style="display:none;">
+        <h3 style="text-align:center;">知乎用户粉丝量排名前10</h3>
+        <!-- 为ECharts 准备一个具备大小（宽高）的dom -->
+        <div id="follower" style="width: 1180px;height:400px;"></div>
+        <script type="text/javascript">
+
+        // 基于准备好的dom,初始化echarts实例
+        var myChart = echarts.init(document.getElementById('follower'));
+        var arrName = new Array();
+        var arrFollowerCount = new Array;
+        var i = 0;
+        var j = 0;
+        {% for follower_top in follower_tops %}
+            arrName[i++] = "{{ follower_top['name'] }}";
+            arrFollowerCount[j++] = {{ follower_top['follower_count'] }};
+        {% endfor %}
+        var option = {
+            title : {
+                text : '知乎用户粉丝top10'
+            },
+            tooltip : {},
+            legend : {
+                data : ['粉丝量']
+            },
+            xAxis : {
+                axisLabel :{
+                    interval:0
+                },
+                data : [arrName[0], arrName[1], arrName[2],arrName[3],arrName[4],arrName[5],arrName[6],arrName[7],arrName[8],arrName[9]]
+            },
+            yAxis : {},
+            series: [{
+                name : '粉丝量',
+                type : 'bar',
+                data : [arrFollowerCount[0], arrFollowerCount[1], arrFollowerCount[2], arrFollowerCount[3], arrFollowerCount[4],
+                        arrFollowerCount[5],arrFollowerCount[6],arrFollowerCount[7],arrFollowerCount[8],arrFollowerCount[9]],
+                itemStyle:{
+                    normal:{
+                        color:'#4ad2ff'
+                    }
+                },
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表
+        myChart.setOption(option);
+        </script>
+    </div>
+
+    <div class="user userAnswers" style="display:none;">
+         <h3 style="text-align:center;">知乎用户回答提问数量排名前10</h3>
+        <!-- 为ECharts 准备一个具备大小（宽高）的dom -->
+        <div id="answer" style="width: 1180px;height:400px;"></div>
+        <script type="text/javascript">
+
+        // 基于准备好的dom,初始化echarts实例
+        var myChart = echarts.init(document.getElementById('answer'));
+        var arrName = new Array();
+        var arrAnswerCount = new Array;
+        var i = 0;
+        var j = 0;
+        {% for answer_top in answer_tops %}
+            arrName[i++] = "{{ answer_top['name'] }}";
+            arrAnswerCount[j++] = {{ answer_top['answer_count'] }};
+        {% endfor %}
+        var option = {
+            title : {
+                text : '知乎用户回答提问量top10'
+            },
+            tooltip : {},
+            legend : {
+                data : ['回答量']
+            },
+            xAxis : {
+                axisLabel :{
+                    interval:0
+                },
+                data : [arrName[0], arrName[1], arrName[2],arrName[3],arrName[4],arrName[5],arrName[6],arrName[7],arrName[8],arrName[9]]
+            },
+            yAxis : {},
+            series: [{
+                name : '回答量',
+                type : 'bar',
+                data : [arrAnswerCount[0], arrAnswerCount[1], arrAnswerCount[2], arrAnswerCount[3], arrAnswerCount[4],
+                        arrAnswerCount[5],arrAnswerCount[6],arrAnswerCount[7],arrAnswerCount[8],arrAnswerCount[9]],
+                itemStyle:{
+                    normal:{
+                        color:'#4a3fff'
+                    }
+                },
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表
+        myChart.setOption(option);
+        </script>
+    </div>
+
+    <div class="user userArticles" style="display:none;">
+         <h3 style="text-align:center;">知乎用户发表文章数量排名前10</h3>
+        <!-- 为ECharts 准备一个具备大小（宽高）的dom -->
+        <div id="article" style="width: 1180px;height:400px;"></div>
+        <script type="text/javascript">
+
+        // 基于准备好的dom,初始化echarts实例
+        var myChart = echarts.init(document.getElementById('article'));
+        var arrName = new Array();
+        var arrArticleCount = new Array;
+        var i = 0;
+        var j = 0;
+        {% for article_top in article_tops %}
+            arrName[i++] = "{{ article_top['name'] }}";
+            arrArticleCount[j++] = {{ article_top['articles_count'] }};
+        {% endfor %}
+        var option = {
+            title : {
+                text : '知乎用户发表文章量top10'
+            },
+            tooltip : {},
+            legend : {
+                data : ['文章量']
+            },
+            xAxis : {
+                axisLabel :{
+                    interval:0
+                },
+                data : [arrName[0], arrName[1], arrName[2],arrName[3],arrName[4],arrName[5],arrName[6],arrName[7],arrName[8],arrName[9]]
+            },
+            yAxis : {},
+            series: [{
+                name : '文章量',
+                type : 'bar',
+                data : [arrArticleCount[0], arrArticleCount[1], arrArticleCount[2], arrArticleCount[3], arrArticleCount[4],
+                        arrArticleCount[5],arrArticleCount[6],arrArticleCount[7],arrArticleCount[8],arrArticleCount[9]],
+                itemStyle:{
+                    normal:{
+                        color:'#ee36a3'
+                    }
+                },
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表
+        myChart.setOption(option);
+        </script>
+    </div>
+
+    <div class="user userColumns" style="display:none;">
+         <h3 style="text-align:center;">知乎用户专栏数量排名前10</h3>
+        <!-- 为ECharts 准备一个具备大小（宽高）的dom -->
+        <div id="column" style="width: 1180px;height:400px;"></div>
+        <script type="text/javascript">
+
+        // 基于准备好的dom,初始化echarts实例
+        var myChart = echarts.init(document.getElementById('column'));
+        var arrName = new Array();
+        var arrColumnCount = new Array;
+        var i = 0;
+        var j = 0;
+        {% for column_top in column_tops %}
+            arrName[i++] = "{{ column_top['name'] }}";
+            arrColumnCount[j++] = {{ column_top['columns_count'] }};
+        {% endfor %}
+        var option = {
+            title : {
+                text : '知乎用户专栏数量top10'
+            },
+            tooltip : {},
+            legend : {
+                data : ['专栏量']
+            },
+            xAxis : {
+                axisLabel :{
+                    interval:0
+                },
+                data : [arrName[0], arrName[1], arrName[2],arrName[3],arrName[4],arrName[5],arrName[6],arrName[7],arrName[8],arrName[9]]
+            },
+            yAxis : {},
+            series: [{
+                name : '专栏量',
+                type : 'bar',
+                data : [arrColumnCount[0], arrColumnCount[1], arrColumnCount[2], arrColumnCount[3], arrColumnCount[4],
+                        arrColumnCount[5],arrColumnCount[6],arrColumnCount[7],arrColumnCount[8],arrColumnCount[9]],
+                itemStyle:{
+                    normal:{
+                        color:'#eeffa3'
+                    }
+                },
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表
+        myChart.setOption(option);
+        </script>
+    </div>
+
+    <div class="user userLives" style="display:none;">
+        <h3 style="text-align:center;">知乎用户live数量排名前10</h3>
+        <!-- 为ECharts 准备一个具备大小（宽高）的dom -->
+        <div id="live" style="width: 1180px;height:400px;"></div>
+        <script type="text/javascript">
+
+        // 基于准备好的dom,初始化echarts实例
+        var myChart = echarts.init(document.getElementById('live'));
+        var arrName = new Array();
+        var arrLiveCount = new Array;
+        var i = 0;
+        var j = 0;
+        {% for live_top in live_tops %}
+            arrName[i++] = "{{ live_top['name'] }}";
+            arrLiveCount[j++] = {{ live_top['participated_live_count'] }};
+        {% endfor %}
+        var option = {
+            title : {
+                text : '知乎用户live数量top10'
+            },
+            tooltip : {},
+            legend : {
+                data : ['live数量']
+            },
+            xAxis : {
+                axisLabel :{
+                    interval:0
+                },
+                data : [arrName[0], arrName[1], arrName[2],arrName[3],arrName[4],arrName[5],arrName[6],arrName[7],arrName[8],arrName[9]]
+            },
+            yAxis : {},
+            series: [{
+                name : 'live数量',
+                type : 'bar',
+                data : [arrLiveCount[0], arrLiveCount[1], arrLiveCount[2], arrLiveCount[3], arrLiveCount[4],
+                        arrLiveCount[5],arrLiveCount[6],arrLiveCount[7],arrLiveCount[8],arrLiveCount[9]],
+                itemStyle:{
+                    normal:{
+                        color:'#4566a3'
+                    }
+                },
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表
+        myChart.setOption(option);
+        </script>
+    </div>
+
+    <div class="user userSchools" style="display:none;">
+         <h3 style="text-align:center;">词云</h3>
+
+        <!-- 为ECharts 准备一个具备大小（宽高）的dom -->
+        <div id="schoolWordCloud" style="width: 1180px;height:400px;"></div>
+        <script type="text/javascript">
+            {#var school = new Array();#}
+        // 基于准备好的dom,初始化echarts
+        var myChart = echarts.init(document.getElementById('schoolWordCloud'));
+        var option = {
+            title : {
+                text : '知乎用户主要学校来源 '
+            },
+            series: [
+                {
+               type: 'wordCloud',
+                    gridSize: 5,
+                    sizeRange: [12, 60],
+                    rotationRange: [-90, 90],
+                    shape: 'circle',
+                    rotationStep: 45,
+                    drawOutOfBound: true,
+                    textStyle: {
+                        normal: {
+                            color: function () {
+                                return 'rgb(' + [
+                                        Math.round(Math.random() * 255),
+                                        Math.round(Math.random() * 255),
+                                        Math.round(Math.random() * 255)
+                                    ].join(',') + ')';
+                            }
+                        },
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowColor: '#333'
+                        }
+                    },
+                    data:[
+                        {% for key in schools %}
+                            {name:"{{ key }}",value:"{{ schools[key] }}"},
+                        {% endfor %}
+                    ]
+                }
+              ]
+        };
+        // 使用刚指定的配置项和数据显示图表
+        myChart.setOption(option);
+        </script>
+        <p style="text-align:center; font-weight:bolder; ">词云中字体越大，比重越大，表示知乎用户来自该学校的越多</p>
+    </div>
+
+    <div class="user userLocations" style="display:none;">
+         <!-- 为ECharts 准备一个具备大小（宽高）的dom -->
+        <div id="locationWordCloud" style="width: 1180px;height:400px;"></div>
+        <script type="text/javascript">
+            {#var school = new Array();#}
+        // 基于准备好的dom,初始化echarts
+        var myChart = echarts.init(document.getElementById('locationWordCloud'));
+        var option = {
+            title : {
+                text : '知乎用户主要地区来源 '
+            },
+            series: [
+                {
+               type: 'wordCloud',
+                    gridSize: 5,
+                    sizeRange: [12, 60],
+                    rotationRange: [-90, 90],
+                    shape: 'circle',
+                    rotationStep: 45,
+                    drawOutOfBound: true,
+                    textStyle: {
+                        normal: {
+                            color: function () {
+                                return 'rgb(' + [
+                                        Math.round(Math.random() * 255),
+                                        Math.round(Math.random() * 255),
+                                        Math.round(Math.random() * 255)
+                                    ].join(',') + ')';
+                            }
+                        },
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowColor: '#333'
+                        }
+                    },
+                    data:[
+                        {% for key in locations %}
+                            {name:"{{ key }}",value:"{{ locations[key] }}"},
+                        {% endfor %}
+                    ]
+                }
+              ]
+        };
+        // 使用刚指定的配置项和数据显示图表
+        myChart.setOption(option);
+        </script>
+        <p style="text-align:center; font-weight:bolder; ">词云中字体越大，比重越大，表示知乎用户来自该地区的越多</p>
+    </div>
+
+        {# 按钮#}
+    <button class="infostyle default" id="userSexBtn">知乎用户性别分析</button>
+    <button class="infostyle" id="userFansBtn">知乎用户粉丝量排名前10</button>
+    <button class="infostyle" id="userAnsBtn">知乎用户回答提问数量排名前10</button>
+    <button class="infostyle" id="userArtBtn">知乎用户发表文章数量排名前10</button>
+    <button class="infostyle" id="userColBtn">知乎用户专栏数量排名前10</button>
+    <button class="infostyle" id="userLivBtn">知乎用户live数量排名前10</button>
+    <button class="infostyle" id="userSchBtn">知乎用户主要学校来源</button>
+    <button class="infostyle" id="userLocBtn">知乎用户主要地区来源</button>
+
+
+    <script type="text/javascript">
+        document.getElementById("userSexBtn").onclick = function () {
+            var btns = document.getElementsByClassName("infostyle");
+            for(i=0;i<btns.length;i++)
+            {
+                btns[i].classList.remove("default");
+            }
+            var users = document.getElementsByClassName("user");
+            for(j=0;j<users.length;j++)
+            {
+                users[j].style.display = "none";
+            }
+
+            $("#userSexBtn").addClass("default");
+            $(".userSex").css("display","block");
+        }
+        document.getElementById("userFansBtn").onclick = function () {
+            var btns = document.getElementsByClassName("infostyle");
+            for(i=0;i<btns.length;i++)
+            {
+                btns[i].classList.remove("default");
+            }
+            var users = document.getElementsByClassName("user");
+            for(j=0;j<users.length;j++)
+            {
+                users[j].style.display = "none";
+            }
+
+            $("#userFansBtn").addClass("default");
+            $(".userFans").css("display","block");
+        }
+        document.getElementById("userAnsBtn").onclick = function () {
+            var btns = document.getElementsByClassName("infostyle");
+            for(i=0;i<btns.length;i++)
+            {
+                btns[i].classList.remove("default");
+            }
+            var users = document.getElementsByClassName("user");
+            for(j=0;j<users.length;j++)
+            {
+                users[j].style.display = "none";
+            }
+
+            $("#userAnsBtn").addClass("default");
+            $(".userAnswers").css("display","block");
+        }
+        document.getElementById("userArtBtn").onclick = function () {
+            var btns = document.getElementsByClassName("infostyle");
+            for(i=0;i<btns.length;i++)
+            {
+                btns[i].classList.remove("default");
+            }
+            var users = document.getElementsByClassName("user");
+            for(j=0;j<users.length;j++)
+            {
+                users[j].style.display = "none";
+            }
+
+            $("#userArtBtn").addClass("default");
+            $(".userArticles").css("display","block");
+        }
+        document.getElementById("userColBtn").onclick = function () {
+            var btns = document.getElementsByClassName("infostyle");
+            for(i=0;i<btns.length;i++)
+            {
+                btns[i].classList.remove("default");
+            }
+            var users = document.getElementsByClassName("user");
+            for(j=0;j<users.length;j++)
+            {
+                users[j].style.display = "none";
+            }
+
+            $("#userColBtn").addClass("default");
+            $(".userColumns").css("display","block");
+        }
+        document.getElementById("userLivBtn").onclick = function () {
+            var btns = document.getElementsByClassName("infostyle");
+            for(i=0;i<btns.length;i++)
+            {
+                btns[i].classList.remove("default");
+            }
+            var users = document.getElementsByClassName("user");
+            for(j=0;j<users.length;j++)
+            {
+                users[j].style.display = "none";
+            }
+
+            $("#userLivBtn").addClass("default");
+            $(".userLives").css("display","block");
+        }
+        document.getElementById("userSchBtn").onclick = function () {
+            var btns = document.getElementsByClassName("infostyle");
+            for(i=0;i<btns.length;i++)
+            {
+                btns[i].classList.remove("default");
+            }
+            var users = document.getElementsByClassName("user");
+            for(j=0;j<users.length;j++)
+            {
+                users[j].style.display = "none";
+            }
+
+            $("#userSchBtn").addClass("default");
+            $(".userSchools").css("display","block");
+        }
+        document.getElementById("userLocBtn").onclick = function () {
+            var btns = document.getElementsByClassName("infostyle");
+            for(i=0;i<btns.length;i++)
+            {
+                btns[i].classList.remove("default");
+            }
+            var users = document.getElementsByClassName("user");
+            for(j=0;j<users.length;j++)
+            {
+                users[j].style.display = "none";
+            }
+
+            $("#userLocBtn").addClass("default");
+            $(".userLocations").css("display","block");
+        }
+    </script>
+
+    </div>
+
+</body>
+</html>
